@@ -25,10 +25,10 @@
 <urn:distrho:a-fluidsynth>
   a doap:Project, lv2:InstrumentPlugin, lv2:Plugin ;
 
-  doap:name "ACE Fluid Synth" ;
+  doap:name "DIE Fluid Synth" ;
   rdfs:comment "SF2 Synthesizer using Fluidsynth" ;
 
-  doap:maintainer <http://ardour.org/credits.html> ;
+  doap:developer <http://ardour.org/credits.html> ;
   doap:license <http://usefulinc.com/doap/licenses/gpl> ;
 
   lv2:microVersion 2 ;

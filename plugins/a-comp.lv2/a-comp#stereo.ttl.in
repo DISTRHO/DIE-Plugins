@@ -177,9 +177,9 @@ unit:db-display
 A powerful stereo compressor.
 """ ;
 
-    doap:name "ACE Compressor (stereo)" ;
+    doap:name "DIE Compressor (stereo)" ;
     doap:license "GPL v2+" ;
-    doap:maintainer <http://ardour.org/credits.html> ;
+    doap:developer <http://ardour.org/credits.html> ;
 
     lv2:microVersion 0 ;
     lv2:minorVersion 2 .

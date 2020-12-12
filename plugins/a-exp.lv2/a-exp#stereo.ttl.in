@@ -170,9 +170,9 @@
 A powerful stereo expander
 """ ;
 
-    doap:name "ACE Expander (stereo)" ;
+    doap:name "DIE Expander (stereo)" ;
 		doap:license <http://usefulinc.com/doap/licenses/gpl> ;
-    doap:maintainer <http://ardour.org/credits.html> ;
+    doap:developer <http://ardour.org/credits.html> ;
 
     lv2:microVersion 0 ;
     lv2:minorVersion 2 .

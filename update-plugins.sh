@@ -23,3 +23,5 @@ git checkout plugins/*/Makefile
 # custom URI
 sed -i -e "s/:ardour:/:distrho:/" plugins/a-*.lv2/*.c
 sed -i -e "s/:ardour:/:distrho:/" plugins/a-*.lv2/*.ttl.in
+sed -i -e "s/ACE /DIE /" plugins/a-*.lv2/*.ttl.in
+sed -i -e "s/doap:maintainer/doap:developer/" plugins/a-*.lv2/*.ttl.in
