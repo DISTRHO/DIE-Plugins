@@ -16,6 +16,6 @@ popd
 # TODO use rsync
 rm -rf plugins
 cp -rv ardour/libs/plugins .
-cp -rv ardour/libs/fluidsynth ardour/libs/plugins/a-fluidsynth
+cp -rv ardour/libs/fluidsynth plugins/a-fluidsynth.lv2/fluidsynth
 rm -rf plugins/reasonablesynth.lv2
 git checkout plugins/*/Makefile
