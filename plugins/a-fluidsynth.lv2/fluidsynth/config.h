@@ -150,10 +150,10 @@
 /* #undef LADSPA */
 
 /* libsndfile has ogg vorbis support */
-/* #undef LIBSNDFILE_HASVORBIS */
+#define LIBSNDFILE_HASVORBIS 1
 
 /* Define to enable libsndfile support */
-/* #undef LIBSNDFILE_SUPPORT */
+#define LIBSNDFILE_SUPPORT 1
 
 /* Define to enable MidiShare driver */
 /* #undef MIDISHARE_SUPPORT */
@@ -201,7 +201,7 @@
 #define VERSION "2.0.6"
 
 /* Define to do all DSP in single floating point precision */
-/* #undef WITH_FLOAT */
+#define WITH_FLOAT 1
 
 /* Define to profile the DSP code */
 /* #undef WITH_PROFILING */

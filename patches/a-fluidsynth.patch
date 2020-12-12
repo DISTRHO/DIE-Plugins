@@ -1,0 +1,46 @@
+diff --git a/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in b/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in
+index be6a82a..a4c7a0a 100644
+--- a/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in
++++ b/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in
+@@ -3,6 +3,7 @@
+ @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+ @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+ @prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
++@prefix mod:   <http://moddevices.com/ns/mod#> .
+ @prefix patch: <http://lv2plug.in/ns/ext/patch#> .
+ @prefix pprop: <http://lv2plug.in/ns/ext/port-props#> .
+ @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@@ -19,6 +20,7 @@
+ 
+ <urn:distrho:a-fluidsynth:sf2file>
+   a lv2:Parameter ;
++  mod:fileTypes "sf2" ;
+   rdfs:label "SF2 File" ;
+   rdfs:range atom:Path .
+ 
+diff --git a/plugins/a-fluidsynth.lv2/fluidsynth/config.h b/plugins/a-fluidsynth.lv2/fluidsynth/config.h
+index df62444..aaefb78 100644
+--- a/plugins/a-fluidsynth.lv2/fluidsynth/config.h
++++ b/plugins/a-fluidsynth.lv2/fluidsynth/config.h
+@@ -150,10 +150,10 @@
+ /* #undef LADSPA */
+ 
+ /* libsndfile has ogg vorbis support */
+-/* #undef LIBSNDFILE_HASVORBIS */
++#define LIBSNDFILE_HASVORBIS 1
+ 
+ /* Define to enable libsndfile support */
+-/* #undef LIBSNDFILE_SUPPORT */
++#define LIBSNDFILE_SUPPORT 1
+ 
+ /* Define to enable MidiShare driver */
+ /* #undef MIDISHARE_SUPPORT */
+@@ -201,7 +201,7 @@
+ #define VERSION "2.0.6"
+ 
+ /* Define to do all DSP in single floating point precision */
+-/* #undef WITH_FLOAT */
++#define WITH_FLOAT 1
+ 
+ /* Define to profile the DSP code */
+ /* #undef WITH_PROFILING */

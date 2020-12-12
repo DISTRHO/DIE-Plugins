@@ -26,3 +26,6 @@ sed -i -e "s/:ardour:/:distrho:/" plugins/a-*.lv2/*.cc
 sed -i -e "s/:ardour:/:distrho:/" plugins/a-*.lv2/*.ttl.in
 sed -i -e "s/ACE /DIE /" plugins/a-*.lv2/*.ttl.in
 sed -i -e "s/doap:maintainer/doap:developer/" plugins/a-*.lv2/*.ttl.in
+
+# custom patches
+patch -p1 -i patches/a-fluidsynth.patch
