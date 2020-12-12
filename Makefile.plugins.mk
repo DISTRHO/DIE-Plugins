@@ -27,11 +27,12 @@ OBJS = $(FILES:%=$(BUILD_DIR)/%.o)
 # ---------------------------------------------------------------------------------------------------------------------
 # Default build target
 
-TARGET = $(TARGET_DIR)/$(NAME).lv2/$(NAME)$(LIB_EXT)
+BUNDLE_DIR = $(TARGET_DIR)/$(NAME).lv2
+TARGET_FILES = $(BUNDLE_DIR)/$(NAME)$(LIB_EXT) $(BUNDLE_DIR)/manifest.ttl $(BUNDLE_DIR)/$(NAME).ttl
 
 all: build
 
-build: $(TARGET)
+build: $(TARGET_FILES)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Build commands
@@ -51,14 +52,19 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 	@echo "Compiling $<"
 	$(SILENT)$(CXX) $< $(BUILD_CXX_FLAGS) -c -o $@
 
-$(TARGET): $(OBJS)
+$(BUNDLE_DIR)/%.ttl: %.ttl.in
+	-@mkdir -p $(shell dirname $@)
+	@echo "Creating $?.ttl"
+	$(SILENT)sed -e "s/@LIB_EXT@/$(LIB_EXT)/" $< > $@
+
+$(BUNDLE_DIR)/$(NAME)$(LIB_EXT): $(OBJS)
 	-@mkdir -p $(shell dirname $@)
 	@echo "Linking $(NAME)"
 	$(SILENT)$(CXX) $^ $(LINK_FLAGS) $(SHARED) -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -rf $(TARGET_DIR)/$(NAME).lv2
+	rm -rf $(BUNDLE_DIR)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
