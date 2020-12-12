@@ -48,9 +48,9 @@ FILES = \
 
 CUSTOM_BUILD_FLAGS  = -DHAVE_CONFIG_H -DDEFAULT_SOUNDFONT=\"\"
 CUSTOM_BUILD_FLAGS += -Ifluidsynth -Ifluidsynth/fluidsynth -Ifluidsynth/src
-CUSTOM_BUILD_FLAGS += $(shell pkg-config --cflags glib-2.0)
+CUSTOM_BUILD_FLAGS += $(shell pkg-config --cflags glib-2.0 sndfile)
 
-CUSTOM_LINK_FLAGS   = $(shell pkg-config --libs glib-2.0)
+CUSTOM_LINK_FLAGS   = $(shell pkg-config --libs glib-2.0 sndfile)
 
 # --------------------------------------------------------------
 # Do some magic
