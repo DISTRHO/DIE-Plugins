@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define AFS_URN "urn:ardour:a-fluidsynth"
+#define AFS_URN "urn:distrho:a-fluidsynth"
 
 #ifdef HAVE_LV2_1_10_0
 #define x_forge_object lv2_atom_forge_object
