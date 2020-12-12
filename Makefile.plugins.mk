@@ -29,7 +29,7 @@ OBJS = $(FILES:%=$(BUILD_DIR)/%.o)
 # ---------------------------------------------------------------------------------------------------------------------
 # Default build target
 
-BUNDLE_DIR = $(TARGET_DIR)/$(NAME).lv2
+BUNDLE_DIR = $(TARGET_DIR)/distrho-$(NAME).lv2
 TARGET_FILES = $(BUNDLE_DIR)/$(NAME)$(LIB_EXT) $(BUNDLE_DIR)/manifest.ttl $(BUNDLE_DIR)/$(NAME).ttl
 
 ifeq ($(HAS_PRESETS),true)

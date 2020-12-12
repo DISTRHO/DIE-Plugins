@@ -30,8 +30,8 @@
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
-#define ACOMP_URI		"urn:ardour:a-comp"
-#define ACOMP_STEREO_URI	"urn:ardour:a-comp#stereo"
+#define ACOMP_URI		"urn:distrho:a-comp"
+#define ACOMP_STEREO_URI	"urn:distrho:a-comp#stereo"
 
 #define RESET_PEAK_AFTER_SECONDS 3
 

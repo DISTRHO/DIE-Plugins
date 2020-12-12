@@ -28,7 +28,7 @@ unit:db1
 	unit:render "%4.1f dB" ;
 	unit:symbol "dB" .
 
-<urn:ardour:a-eq>
+<urn:distrho:a-eq>
     a lv2:Plugin, doap:Project, lv2:FilterPlugin ;
 
     lv2:optionalFeature <http://lv2plug.in/ns/lv2core#hardRTCapable> ;

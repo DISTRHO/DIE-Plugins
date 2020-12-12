@@ -11,7 +11,7 @@
 	foaf:name "Ardour Community" ;
 	foaf:homepage <http://ardour.org/> .
 
-<urn:ardour:a-reverb>
+<urn:distrho:a-reverb>
 	a doap:Project, lv2:Plugin, lv2:ReverbPlugin ;
 
 	doap:name "ACE Reverb" ;

@@ -439,7 +439,7 @@ extension_data (const char* uri)
 }
 
 static const LV2_Descriptor descriptor = {
-	"urn:ardour:a-reverb",
+	"urn:distrho:a-reverb",
 	instantiate,
 	connect_port,
 	activate,

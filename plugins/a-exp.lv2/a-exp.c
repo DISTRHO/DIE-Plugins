@@ -31,8 +31,8 @@
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
-#define AEXP_URI "urn:ardour:a-exp"
-#define AEXP_STEREO_URI "urn:ardour:a-exp#stereo"
+#define AEXP_URI "urn:distrho:a-exp"
+#define AEXP_STEREO_URI "urn:distrho:a-exp#stereo"
 
 #define RESET_PEAK_AFTER_SECONDS 3
 

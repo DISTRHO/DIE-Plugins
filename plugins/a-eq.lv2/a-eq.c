@@ -42,7 +42,7 @@
 #include "ardour/lv2_extensions.h"
 #endif
 
-#define AEQ_URI	"urn:ardour:a-eq"
+#define AEQ_URI	"urn:distrho:a-eq"
 #define BANDS	6
 #ifndef MIN
 #define MIN(A,B) ((A) < (B)) ? (A) : (B)

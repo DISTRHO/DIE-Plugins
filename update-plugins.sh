@@ -19,3 +19,7 @@ cp -rv ardour/libs/plugins .
 cp -rv ardour/libs/fluidsynth plugins/a-fluidsynth.lv2/fluidsynth
 rm -rf plugins/reasonablesynth.lv2
 git checkout plugins/*/Makefile
+
+# custom URI
+sed -i -e "s/:ardour:/:distrho:/" plugins/a-*.lv2/*.c
+sed -i -e "s/:ardour:/:distrho:/" plugins/a-*.lv2/*.ttl.in

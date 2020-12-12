@@ -1,7 +1,7 @@
 @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
 @prefix pset:  <http://lv2plug.in/ns/ext/presets#> .
 
-<urn:ardour:a-comp#preset001>
+<urn:distrho:a-comp#preset001>
     lv2:port [
         lv2:symbol "att" ;
         pset:value 10.000000 ;
@@ -39,7 +39,7 @@
         pset:value 0.000000 ;
     ] .
 
-<urn:ardour:a-comp#preset002>
+<urn:distrho:a-comp#preset002>
     lv2:port [
         lv2:symbol "att" ;
         pset:value 10.000000 ;
@@ -77,7 +77,7 @@
         pset:value 0.000000 ;
     ] .
 
-<urn:ardour:a-comp#preset003>
+<urn:distrho:a-comp#preset003>
     lv2:port [
         lv2:symbol "att" ;
         pset:value 50.000000 ;

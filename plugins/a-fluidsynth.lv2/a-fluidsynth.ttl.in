@@ -17,12 +17,12 @@
   foaf:name "Ardour Community" ;
   foaf:homepage <http://ardour.org/> .
 
-<urn:ardour:a-fluidsynth:sf2file>
+<urn:distrho:a-fluidsynth:sf2file>
   a lv2:Parameter ;
   rdfs:label "SF2 File" ;
   rdfs:range atom:Path .
 
-<urn:ardour:a-fluidsynth>
+<urn:distrho:a-fluidsynth>
   a doap:Project, lv2:InstrumentPlugin, lv2:Plugin ;
 
   doap:name "ACE Fluid Synth" ;
@@ -38,7 +38,7 @@
   lv2:extensionData work:interface, state:interface ;
   lv2:optionalFeature lv2:hardRTCapable;
 
-  patch:writable <urn:ardour:a-fluidsynth:sf2file> ;
+  patch:writable <urn:distrho:a-fluidsynth:sf2file> ;
 
     lv2:port [
         a lv2:InputPort, atom:AtomPort ;

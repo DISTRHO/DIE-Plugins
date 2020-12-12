@@ -27,7 +27,7 @@
 #include "lv2/lv2plug.in/ns/ext/atom/forge.h"
 #include "lv2/lv2plug.in/ns/ext/urid/urid.h"
 
-#define ADELAY_URI "urn:ardour:a-delay"
+#define ADELAY_URI "urn:distrho:a-delay"
 
 // 8 seconds of delay at 96kHz
 #define MAX_DELAY 768000

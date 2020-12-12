@@ -10,7 +10,7 @@
 	foaf:name "Ardour Community" ;
 	foaf:homepage <http://ardour.org/> .
 
-<urn:ardour:a-exp#stereo>
+<urn:distrho:a-exp#stereo>
     a lv2:Plugin, doap:Project, lv2:ExpanderPlugin ;
 
     lv2:optionalFeature <http://lv2plug.in/ns/lv2core#hardRTCapable> ;
