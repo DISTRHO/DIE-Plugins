@@ -30,6 +30,13 @@ OBJS = $(FILES:%=$(BUILD_DIR)/%.o)
 BUNDLE_DIR = $(TARGET_DIR)/$(NAME).lv2
 TARGET_FILES = $(BUNDLE_DIR)/$(NAME)$(LIB_EXT) $(BUNDLE_DIR)/manifest.ttl $(BUNDLE_DIR)/$(NAME).ttl
 
+ifeq ($(HAS_PRESETS),true)
+TARGET_FILES += $(BUNDLE_DIR)/presets.ttl
+endif
+ifeq ($(HAS_STEREO),true)
+TARGET_FILES += $(BUNDLE_DIR)/$(NAME)\#stereo.ttl
+endif
+
 all: build
 
 build: $(TARGET_FILES)
@@ -54,12 +61,12 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 
 $(BUNDLE_DIR)/%.ttl: %.ttl.in
 	-@mkdir -p $(shell dirname $@)
-	@echo "Creating $?.ttl"
+	@echo "Adjusting $?"
 	$(SILENT)sed -e "s/@LIB_EXT@/$(LIB_EXT)/" $< > $@
 
 $(BUNDLE_DIR)/$(NAME)$(LIB_EXT): $(OBJS)
 	-@mkdir -p $(shell dirname $@)
-	@echo "Linking $(NAME)"
+	@echo "Linking $(NAME)$(LIB_EXT)"
 	$(SILENT)$(CXX) $^ $(LINK_FLAGS) $(SHARED) -o $@
 
 clean:

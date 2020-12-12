@@ -16,6 +16,12 @@ FILES = \
 	$(NAME).c
 
 # --------------------------------------------------------------
+# Extra params
+
+HAS_PRESETS = true
+HAS_STEREO = true
+
+# --------------------------------------------------------------
 # Do some magic
 
 include ../../Makefile.plugins.mk
