@@ -15,6 +15,8 @@ TARGET_DIR = ../../bin
 BUILD_DIR = ../../build/$(NAME)
 
 BASE_FLAGS += -Wno-unused-function -Wno-unused-parameter -DHAVE_LV2_1_10_0
+BASE_FLAGS += $(CUSTOM_BUILD_FLAGS)
+LINK_FLAGS += $(CUSTOM_LINK_FLAGS)
 
 BUILD_C_FLAGS   += -I.
 BUILD_CXX_FLAGS += -I.
@@ -67,7 +69,8 @@ $(BUNDLE_DIR)/%.ttl: %.ttl.in
 $(BUNDLE_DIR)/$(NAME)$(LIB_EXT): $(OBJS)
 	-@mkdir -p $(shell dirname $@)
 	@echo "Linking $(NAME)$(LIB_EXT)"
-	$(SILENT)$(CXX) $^ $(LINK_FLAGS) $(SHARED) -o $@
+# 	$(SILENT)
+	$(CXX) $^ $(LINK_FLAGS) $(SHARED) -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
