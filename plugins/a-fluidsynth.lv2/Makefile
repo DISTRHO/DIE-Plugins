@@ -51,7 +51,9 @@ CUSTOM_BUILD_FLAGS += -Ifluidsynth -Ifluidsynth/fluidsynth -Ifluidsynth/src
 CUSTOM_BUILD_FLAGS += $(shell pkg-config --cflags gthread-2.0 glib-2.0 sndfile) -pthread
 
 CUSTOM_LINK_FLAGS   = $(shell pkg-config --libs gthread-2.0 glib-2.0 sndfile) -pthread
+
 ifeq ($(WINDOWS),true)
+CUSTOM_BUILD_FLAGS += -DFLUIDSYNTH_NOT_A_DLL
 CUSTOM_LINK_FLAGS  += -lole32 -lws2_32
 endif
 
