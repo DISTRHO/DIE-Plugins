@@ -15,7 +15,7 @@ The current list of imported plugins so far are:
 
 ## Building
 
-DIE-Plugins current requires the following external libraries:
+DIE-Plugins currently requires the following external libraries:
 
  - glib2.0
  - sndfile
