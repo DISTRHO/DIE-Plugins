@@ -69,8 +69,7 @@ $(BUNDLE_DIR)/%.ttl: %.ttl.in
 $(BUNDLE_DIR)/$(NAME)$(LIB_EXT): $(OBJS)
 	-@mkdir -p $(shell dirname $@)
 	@echo "Linking $(NAME)$(LIB_EXT)"
-# 	$(SILENT)
-	$(CXX) $^ $(LINK_FLAGS) $(SHARED) -o $@
+	$(SILENT)$(CXX) $^ $(LINK_FLAGS) $(SHARED) -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
