@@ -17,6 +17,7 @@ The current list of imported plugins so far are:
 
 DIE-Plugins currently requires the following external libraries:
 
+ - LV2
  - glib2.0
  - sndfile
 
