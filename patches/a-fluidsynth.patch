@@ -35,12 +35,29 @@ index df62444..aaefb78 100644
  
  /* Define to enable MidiShare driver */
  /* #undef MIDISHARE_SUPPORT */
-@@ -201,7 +201,7 @@
+@@ -201,11 +201,7 @@
  #define VERSION "2.0.6"
  
  /* Define to do all DSP in single floating point precision */
--/* #undef WITH_FLOAT */
+-#ifdef __arm__
+-#  define WITH_FLOAT
+-#else
+-#  undef WITH_FLOAT
+-#endif
 +#define WITH_FLOAT 1
  
  /* Define to profile the DSP code */
  /* #undef WITH_PROFILING */
+diff --git a/plugins/a-fluidsynth.lv2/fluidsynth/fluidsynth/fluidsynth.h b/plugins/a-fluidsynth.lv2/fluidsynth/fluidsynth/fluidsynth.h
+index 8852ea2..fcef55a 100644
+--- a/plugins/a-fluidsynth.lv2/fluidsynth/fluidsynth/fluidsynth.h
++++ b/plugins/a-fluidsynth.lv2/fluidsynth/fluidsynth/fluidsynth.h
+@@ -3,7 +3,7 @@
+ 
+ #include <stdio.h>
+ 
+-#if defined(COMPILER_MSVC)
++#if defined(COMPILER_MSVC) || defined(FLUIDSYNTH_NOT_A_DLL)
+ #  define FLUIDSYNTH_API
+ #else
+ #  define FLUIDSYNTH_API  __attribute__ ((visibility ("hidden")))

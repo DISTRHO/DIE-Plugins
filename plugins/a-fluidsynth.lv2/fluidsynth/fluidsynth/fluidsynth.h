@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#if defined(COMPILER_MSVC)
+#if defined(COMPILER_MSVC) || defined(FLUIDSYNTH_NOT_A_DLL)
 #  define FLUIDSYNTH_API
 #else
 #  define FLUIDSYNTH_API  __attribute__ ((visibility ("hidden")))
