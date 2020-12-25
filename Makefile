@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
-# Makefile for ACE #
-# ---------------- #
+# Makefile for DIE-Plugins #
+# ------------------------ #
 # Created by falkTX
 #
 
