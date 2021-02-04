@@ -723,7 +723,11 @@ save (LV2_Handle                instance,
 {
 	AFluidSynth* self = (AFluidSynth*)instance;
 
-	if (strlen (self->current_sf2_file_path) == 0) {
+	const char* file_path = self->queue_reinit
+	                      ? self->queue_sf2_file_path
+	                      : self->current_sf2_file_path;
+
+	if (strlen (file_path) == 0) {
 		return LV2_STATE_ERR_NO_PROPERTY;
 	}
 
@@ -742,7 +746,7 @@ save (LV2_Handle                instance,
 		return LV2_STATE_ERR_NO_FEATURE;
 	}
 
-	char* apath = map_path->abstract_path (map_path->handle, self->current_sf2_file_path);
+	char* apath = map_path->abstract_path (map_path->handle, file_path);
 	store (handle, self->afs_sf2file,
 			apath, strlen (apath) + 1,
 			self->atom_Path, LV2_STATE_IS_POD);
