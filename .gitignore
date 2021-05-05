@@ -1,3 +1,6 @@
 /ardour
 /bin
 /build
+wscript
+*.orig
+*.rej
