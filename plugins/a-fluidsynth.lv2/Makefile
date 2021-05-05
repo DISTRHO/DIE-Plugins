@@ -53,9 +53,11 @@ CUSTOM_BUILD_FLAGS += $(shell pkg-config --cflags gthread-2.0 glib-2.0 sndfile) 
 
 CUSTOM_LINK_FLAGS   = $(shell pkg-config --libs gthread-2.0 glib-2.0 sndfile) -pthread
 
+ifeq ($(DISABLE_OPENMP),)
 ifneq ($(MACOS),true)
 CUSTOM_BUILD_FLAGS += -DHAVE_OPENMP -fopenmp
 CUSTOM_LINK_FLAGS  += -fopenmp
+endif
 endif
 
 ifeq ($(WINDOWS),true)
