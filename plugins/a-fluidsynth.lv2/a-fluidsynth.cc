@@ -541,7 +541,9 @@ run (LV2_Handle instance, uint32_t n_samples)
 #ifdef MOD_EXTENDED
 	const bool enabled = *self->p_ports[FS_PORT_ENABLE] > 0;
 	if (self->v_ports[FS_PORT_ENABLE] != *self->p_ports[FS_PORT_ENABLE]) {
-		self->panic = true;
+		if (self->initialized && !self->reinit_in_progress) {
+			fluid_synth_all_notes_off (self->synth, -1);
+		}
 	}
 #else
 	const bool enabled = true;
