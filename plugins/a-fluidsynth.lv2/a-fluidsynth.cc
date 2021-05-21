@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2016-2019 Robin Gareus <robin@gareus.org>
+ * Copyright (C) 2021 Filipe Coelho <falktx@falktx.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define MOD_EXTENDED
+
 #define AFS_URN "urn:distrho:a-fluidsynth"
 
 #ifdef HAVE_LV2_1_10_0
@@ -40,6 +43,9 @@
 
 #ifdef LV2_EXTENDED
 #include "../../ardour/ardour/lv2_extensions.h"
+#endif
+#ifdef MOD_EXTENDED
+#include "mod-lv2-hmi.h"
 #endif
 
 #include "fluidsynth.h"
@@ -72,6 +78,9 @@ enum {
 	FS_CHR_DEPTH,
 	FS_CHR_LEVEL,
 	FS_CHR_TYPE,
+#ifdef MOD_EXTENDED
+	FS_PORT_ENABLE,
+#endif
 	FS_PORT_LAST
 };
 
@@ -105,7 +114,7 @@ typedef std::map<int, BankProgram> BPState;
 typedef struct {
 	/* ports */
 	const LV2_Atom_Sequence* control;
-  LV2_Atom_Sequence*       notify;
+	LV2_Atom_Sequence*       notify;
 
 	float* p_ports[FS_PORT_LAST];
 	float  v_ports[FS_PORT_LAST];
@@ -134,7 +143,7 @@ typedef struct {
 	/* lv2 extensions */
 	LV2_Log_Log*         log;
 	LV2_Log_Logger       logger;
-  LV2_Worker_Schedule* schedule;
+	LV2_Worker_Schedule* schedule;
 	LV2_Atom_Forge       forge;
 	LV2_Atom_Forge_Frame frame;
 
@@ -142,6 +151,10 @@ typedef struct {
 	LV2_Midnam*          midnam;
 	LV2_BankPatch*       bankpatch;
 	BPMap                presets;
+#endif
+#ifdef MOD_EXTENDED
+	LV2_HMI_Addressing     hmi_addressing;
+	LV2_HMI_WidgetControl* hmi_control;
 #endif
 	pthread_mutex_t      bp_lock;
 
@@ -372,7 +385,11 @@ instantiate (const LV2_Descriptor*     descriptor,
 		} else if (!strcmp (features[i]->URI, LV2_BANKPATCH__notify)) {
 			self->bankpatch = (LV2_BankPatch*)features[i]->data;
 #endif
+#ifdef MOD_EXTENDED
+		} else if (!strcmp (features[i]->URI, LV2_HMI__WidgetControl)) {
+			self->hmi_control = (LV2_HMI_WidgetControl*)features[i]->data;
 		}
+#endif
 	}
 
 	lv2_log_logger_init (&self->logger, map, self->log);
@@ -398,6 +415,9 @@ instantiate (const LV2_Descriptor*     descriptor,
 		lv2_log_warning (&self->logger, "a-fluidsynth.lv2: Host does not support bankpatch:notify\n");
 	}
 #endif
+#ifdef MOD_EXTENDED
+	lv2_log_warning (&self->logger, "a-fluidsynth.lv2: hmi_control %p\n", self->hmi_control);
+#endif
 
 	/* initialize fluid synth */
 	self->settings = new_fluid_settings ();
@@ -416,7 +436,7 @@ instantiate (const LV2_Descriptor*     descriptor,
 
 	if (!self->synth) {
 		lv2_log_error (&self->logger, "a-fluidsynth.lv2: cannot allocate Fluid Synth\n");
-    delete_fluid_settings (self->settings);
+		delete_fluid_settings (self->settings);
 		free (self);
 		return NULL;
 	}
@@ -433,7 +453,7 @@ instantiate (const LV2_Descriptor*     descriptor,
 	if (!self->fmidi_event) {
 		lv2_log_error (&self->logger, "a-fluidsynth.lv2: cannot allocate Fluid Event\n");
 		delete_fluid_synth (self->synth);
-    delete_fluid_settings (self->settings);
+		delete_fluid_settings (self->settings);
 		free (self);
 		return NULL;
 	}
@@ -518,6 +538,15 @@ run (LV2_Handle instance, uint32_t n_samples)
 	lv2_atom_forge_set_buffer (&self->forge, (uint8_t*)self->notify, capacity);
 	lv2_atom_forge_sequence_head (&self->forge, &self->frame, 0);
 
+#ifdef MOD_EXTENDED
+	const bool enabled = *self->p_ports[FS_PORT_ENABLE] > 0;
+	if (self->v_ports[FS_PORT_ENABLE] != *self->p_ports[FS_PORT_ENABLE]) {
+		self->panic = true;
+	}
+#else
+	const bool enabled = true;
+#endif
+
 	if (!self->initialized || self->reinit_in_progress) {
 		memset (self->p_ports[FS_PORT_OUT_L], 0, n_samples * sizeof (float));
 		memset (self->p_ports[FS_PORT_OUT_R], 0, n_samples * sizeof (float));
@@ -593,11 +622,19 @@ run (LV2_Handle instance, uint32_t n_samples)
 					self->reinit_in_progress = true;
 					int magic = 0x4711;
 					self->schedule->schedule_work (self->schedule->handle, sizeof (int), &magic);
+#ifdef MOD_EXTENDED
+					// setup blink loading indicator
+					if (self->hmi_control != NULL && self->hmi_addressing != NULL) {
+						self->hmi_control->set_led(self->hmi_control->handle,
+						                           self->hmi_addressing,
+						                           LV2_HMI_LED_Colour_Red, 100, 100);
+					}
+#endif
 				}
 			}
 		}
 		else if (ev->body.type == self->midi_MidiEvent) {
-			if (ev->time.frames >= n_samples || self->reinit_in_progress) {
+			if (ev->time.frames >= n_samples || self->reinit_in_progress || !enabled) {
 				continue;
 			}
 			if (ev->body.size > 3) {
@@ -739,7 +776,6 @@ work (LV2_Handle                  instance,
 		return LV2_WORKER_ERR_UNKNOWN;
 	}
 
-
 	self->initialized = load_sf2 (self, self->queue_sf2_file_path);
 
 	if (self->initialized) {
@@ -811,6 +847,14 @@ work_response (LV2_Handle  instance,
 			}
 		}
 
+#ifdef MOD_EXTENDED
+		// stop loading indicator
+		if (self->hmi_control != NULL && self->hmi_addressing != NULL) {
+			self->hmi_control->set_led(self->hmi_control->handle,
+			                           self->hmi_addressing,
+			                           LV2_HMI_LED_Colour_Red, 0, 0);
+		}
+#endif
 	} else {
 		self->current_sf2_file_path[0] = 0;
 	}
@@ -919,11 +963,11 @@ restore (LV2_Handle                  instance,
 		return LV2_STATE_ERR_NO_FEATURE;
 	}
 
-  size_t   size;
-  uint32_t type;
-  uint32_t valflags;
+	size_t   size;
+	uint32_t type;
+	uint32_t valflags;
 
-  const void* value = retrieve (handle, self->afs_sf2file, &size, &type, &valflags);
+	const void* value = retrieve (handle, self->afs_sf2file, &size, &type, &valflags);
 	if (!value) {
 		return LV2_STATE_ERR_NO_PROPERTY;
 	}
@@ -1078,6 +1122,28 @@ mn_free (char* v)
 }
 #endif
 
+#ifdef MOD_EXTENDED
+static void
+hmi_addressed (LV2_Handle instance, uint32_t index, LV2_HMI_Addressing addressing, const LV2_HMI_AddressingInfo* info)
+{
+	if (index != FS_PORT_ENABLE || (info->caps & LV2_HMI_AddressingCapability_LED) == 0x0)
+		return;
+
+	AFluidSynth* self = (AFluidSynth*)instance;
+	self->hmi_addressing = addressing;
+}
+
+static void
+hmi_unaddressed (LV2_Handle instance, uint32_t index)
+{
+	if (index != FS_PORT_ENABLE)
+		return;
+
+	AFluidSynth* self = (AFluidSynth*)instance;
+	self->hmi_addressing = NULL;
+}
+#endif
+
 static const void*
 extension_data (const char* uri)
 {
@@ -1093,6 +1159,12 @@ extension_data (const char* uri)
 	else if (!strcmp (uri, LV2_MIDNAM__interface)) {
 		static const LV2_Midnam_Interface midnam = { mn_file, mn_model, mn_free };
 		return &midnam;
+	}
+#endif
+#ifdef MOD_EXTENDED
+	else if (!strcmp (uri, LV2_HMI__PluginNotification)) {
+		static const LV2_HMI_PluginNotification hminotif = { hmi_addressed, hmi_unaddressed };
+		return &hminotif;
 	}
 #endif
 	return NULL;
