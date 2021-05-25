@@ -1,0 +1,125 @@
+diff --git a/plugins/a-fluidsynth.lv2/a-fluidsynth.cc b/plugins/a-fluidsynth.lv2/a-fluidsynth.cc
+index f3457a5..5dcf197 100644
+--- a/plugins/a-fluidsynth.lv2/a-fluidsynth.cc
++++ b/plugins/a-fluidsynth.lv2/a-fluidsynth.cc
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright (C) 2016-2019 Robin Gareus <robin@gareus.org>
++ * Copyright (C) 2021 Filipe Coelho <falktx@falktx.com>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -30,6 +31,8 @@
+ #include <pthread.h>
+ #include <stdlib.h>
+ 
++#define MOD_EXTENDED
++
+ #define AFS_URN "urn:distrho:a-fluidsynth"
+ 
+ #ifdef HAVE_LV2_1_10_0
+@@ -41,6 +44,9 @@
+ #ifdef LV2_EXTENDED
+ #include "../../ardour/ardour/lv2_extensions.h"
+ #endif
++#ifdef MOD_EXTENDED
++#include "mod-lv2-hmi.h"
++#endif
+ 
+ #include "fluidsynth.h"
+ 
+@@ -143,6 +149,10 @@ typedef struct {
+ 	LV2_Midnam*    midnam;
+ 	LV2_BankPatch* bankpatch;
+ 	BPMap          presets;
++#endif
++#ifdef MOD_EXTENDED
++	LV2_HMI_Addressing     hmi_addressing;
++	LV2_HMI_WidgetControl* hmi_control;
+ #endif
+ 	pthread_mutex_t bp_lock;
+ 
+@@ -378,7 +388,11 @@ instantiate (const LV2_Descriptor*     descriptor,
+ 		} else if (!strcmp (features[i]->URI, LV2_BANKPATCH__notify)) {
+ 			self->bankpatch = (LV2_BankPatch*)features[i]->data;
+ #endif
++#ifdef MOD_EXTENDED
++		} else if (!strcmp (features[i]->URI, LV2_HMI__WidgetControl)) {
++			self->hmi_control = (LV2_HMI_WidgetControl*)features[i]->data;
+ 		}
++#endif
+ 	}
+ 
+ 	lv2_log_logger_init (&self->logger, map, self->log);
+@@ -607,6 +621,14 @@ run (LV2_Handle instance, uint32_t n_samples)
+ 					self->reinit_in_progress        = true;
+ 					int magic                       = 0x4711;
+ 					self->schedule->schedule_work (self->schedule->handle, sizeof (int), &magic);
++#ifdef MOD_EXTENDED
++					// setup blink loading indicator
++					if (self->hmi_control != NULL && self->hmi_addressing != NULL) {
++						self->hmi_control->set_led(self->hmi_control->handle,
++						                           self->hmi_addressing,
++						                           LV2_HMI_LED_Colour_Red, 100, 100);
++					}
++#endif
+ 				}
+ 			}
+ 		} else if (ev->body.type == self->midi_MidiEvent) {
+@@ -824,6 +846,14 @@ work_response (LV2_Handle  instance,
+ 			}
+ 		}
+ 
++#ifdef MOD_EXTENDED
++		// stop loading indicator
++		if (self->hmi_control != NULL && self->hmi_addressing != NULL) {
++			self->hmi_control->set_led(self->hmi_control->handle,
++			                           self->hmi_addressing,
++			                           LV2_HMI_LED_Colour_Red, 0, 0);
++		}
++#endif
+ 	} else {
+ 		self->current_sf2_file_path[0] = 0;
+ 	}
+@@ -1089,6 +1119,28 @@ mn_free (char* v)
+ }
+ #endif
+ 
++#ifdef MOD_EXTENDED
++static void
++hmi_addressed (LV2_Handle instance, uint32_t index, LV2_HMI_Addressing addressing, const LV2_HMI_AddressingInfo* info)
++{
++	if (index != FS_PORT_ENABLE || (info->caps & LV2_HMI_AddressingCapability_LED) == 0x0)
++		return;
++
++	AFluidSynth* self = (AFluidSynth*)instance;
++	self->hmi_addressing = addressing;
++}
++
++static void
++hmi_unaddressed (LV2_Handle instance, uint32_t index)
++{
++	if (index != FS_PORT_ENABLE)
++		return;
++
++	AFluidSynth* self = (AFluidSynth*)instance;
++	self->hmi_addressing = NULL;
++}
++#endif
++
+ static const void*
+ extension_data (const char* uri)
+ {
+@@ -1104,6 +1156,12 @@ extension_data (const char* uri)
+ 		static const LV2_Midnam_Interface midnam = { mn_file, mn_model, mn_free };
+ 		return &midnam;
+ 	}
++#endif
++#ifdef MOD_EXTENDED
++	else if (!strcmp (uri, LV2_HMI__PluginNotification)) {
++		static const LV2_HMI_PluginNotification hminotif = { hmi_addressed, hmi_unaddressed };
++		return &hminotif;
++	}
+ #endif
+ 	return NULL;
+ }
