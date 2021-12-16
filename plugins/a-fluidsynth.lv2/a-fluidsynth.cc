@@ -624,9 +624,9 @@ run (LV2_Handle instance, uint32_t n_samples)
 #ifdef MOD_EXTENDED
 					// setup blink loading indicator
 					if (self->hmi_control != NULL && self->hmi_addressing != NULL) {
-						self->hmi_control->set_led(self->hmi_control->handle,
-						                           self->hmi_addressing,
-						                           LV2_HMI_LED_Colour_Red, 100, 100);
+						self->hmi_control->set_led_with_blink(self->hmi_control->handle,
+						                                      self->hmi_addressing,
+						                                      LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Blink_Fast, 0);
 					}
 #endif
 				}
@@ -702,6 +702,14 @@ run (LV2_Handle instance, uint32_t n_samples)
 		self->reinit_in_progress = true;
 		int magic                = 0x4711;
 		self->schedule->schedule_work (self->schedule->handle, sizeof (int), &magic);
+#ifdef MOD_EXTENDED
+		// setup blink loading indicator
+		if (self->hmi_control != NULL && self->hmi_addressing != NULL) {
+			self->hmi_control->set_led_with_blink(self->hmi_control->handle,
+			                                      self->hmi_addressing,
+			                                      LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Blink_Fast, 0);
+		}
+#endif
 	}
 
 	/* inform the GUI */
@@ -849,9 +857,9 @@ work_response (LV2_Handle  instance,
 #ifdef MOD_EXTENDED
 		// stop loading indicator
 		if (self->hmi_control != NULL && self->hmi_addressing != NULL) {
-			self->hmi_control->set_led(self->hmi_control->handle,
-			                           self->hmi_addressing,
-			                           LV2_HMI_LED_Colour_Red, 0, 0);
+			self->hmi_control->set_led_with_blink(self->hmi_control->handle,
+			                                      self->hmi_addressing,
+			                                      LV2_HMI_LED_Colour_Red, 0, 0);
 		}
 #endif
 	} else {
@@ -1128,6 +1136,13 @@ hmi_addressed (LV2_Handle instance, uint32_t index, LV2_HMI_Addressing addressin
 
 	AFluidSynth* self = (AFluidSynth*)instance;
 	self->hmi_addressing = addressing;
+
+	// setup blink loading indicator
+	if (self->reinit_in_progress && self->hmi_control != NULL && self->hmi_addressing != NULL) {
+		self->hmi_control->set_led_with_blink(self->hmi_control->handle,
+		                                      self->hmi_addressing,
+		                                      LV2_HMI_LED_Colour_Red, LV2_HMI_LED_Blink_Fast, 0);
+	}
 }
 
 static void
