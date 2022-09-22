@@ -9,6 +9,13 @@ CC  ?= gcc
 CXX ?= g++
 
 # ---------------------------------------------------------------------------------------------------------------------
+# Protect against multiple inclusion
+
+ifneq ($(DIE_PLUGINS_MAKEFILE_BASE_INCLUDED),true)
+
+DIE_PLUGINS_MAKEFILE_BASE_INCLUDED = true
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Auto-detect OS if not defined
 
 TARGET_MACHINE := $(shell $(CC) -dumpmachine)
@@ -18,33 +25,36 @@ ifneq ($(HAIKU),true)
 ifneq ($(HURD),true)
 ifneq ($(LINUX),true)
 ifneq ($(MACOS),true)
+ifneq ($(WASM),true)
 ifneq ($(WINDOWS),true)
 
 ifneq (,$(findstring bsd,$(TARGET_MACHINE)))
-BSD=true
-endif
-ifneq (,$(findstring haiku,$(TARGET_MACHINE)))
-HAIKU=true
-endif
-ifneq (,$(findstring gnu,$(TARGET_MACHINE)))
-HURD=true
-endif
-ifneq (,$(findstring linux,$(TARGET_MACHINE)))
-LINUX=true
-endif
-ifneq (,$(findstring apple,$(TARGET_MACHINE)))
-MACOS=true
-endif
-ifneq (,$(findstring mingw,$(TARGET_MACHINE)))
-WINDOWS=true
+BSD = true
+else ifneq (,$(findstring haiku,$(TARGET_MACHINE)))
+HAIKU = true
+else ifneq (,$(findstring linux,$(TARGET_MACHINE)))
+LINUX = true
+else ifneq (,$(findstring gnu,$(TARGET_MACHINE)))
+HURD = true
+else ifneq (,$(findstring apple,$(TARGET_MACHINE)))
+MACOS = true
+else ifneq (,$(findstring mingw,$(TARGET_MACHINE)))
+WINDOWS = true
+else ifneq (,$(findstring msys,$(TARGET_MACHINE)))
+WINDOWS = true
+else ifneq (,$(findstring wasm,$(TARGET_MACHINE)))
+WASM = true
+else ifneq (,$(findstring windows,$(TARGET_MACHINE)))
+WINDOWS = true
 endif
 
-endif
-endif
-endif
-endif
-endif
-endif
+endif # WINDOWS
+endif # WASM
+endif # MACOS
+endif # LINUX
+endif # HURD
+endif # HAIKU
+endif # BSD
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Auto-detect the processor
@@ -52,30 +62,46 @@ endif
 TARGET_PROCESSOR := $(firstword $(subst -, ,$(TARGET_MACHINE)))
 
 ifneq (,$(filter i%86,$(TARGET_PROCESSOR)))
-CPU_I386=true
-CPU_I386_OR_X86_64=true
+CPU_I386 = true
+CPU_I386_OR_X86_64 = true
+endif
+ifneq (,$(filter wasm32,$(TARGET_PROCESSOR)))
+CPU_I386 = true
+CPU_I386_OR_X86_64 = true
 endif
 ifneq (,$(filter x86_64,$(TARGET_PROCESSOR)))
-CPU_X86_64=true
-CPU_I386_OR_X86_64=true
+CPU_X86_64 = true
+CPU_I386_OR_X86_64 = true
 endif
 ifneq (,$(filter arm%,$(TARGET_PROCESSOR)))
-CPU_ARM=true
-CPU_ARM_OR_AARCH64=true
+CPU_ARM = true
+CPU_ARM_OR_ARM64 = true
 endif
 ifneq (,$(filter arm64%,$(TARGET_PROCESSOR)))
-CPU_ARM64=true
-CPU_ARM_OR_AARCH64=true
+CPU_ARM64 = true
+CPU_ARM_OR_ARM64 = true
 endif
 ifneq (,$(filter aarch64%,$(TARGET_PROCESSOR)))
-CPU_AARCH64=true
-CPU_ARM_OR_AARCH64=true
+CPU_ARM64 = true
+CPU_ARM_OR_ARM64 = true
+endif
+ifneq (,$(filter riscv64%,$(TARGET_PROCESSOR)))
+CPU_RISCV64 = true
+endif
+
+ifeq ($(CPU_ARM),true)
+ifneq ($(CPU_ARM64),true)
+CPU_ARM32 = true
+endif
 endif
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Set PKG_CONFIG (can be overridden by environment variable)
 
-ifeq ($(WINDOWS),true)
+ifeq ($(WASM),true)
+# Skip on wasm by default
+PKG_CONFIG ?= false
+else ifeq ($(WINDOWS),true)
 # Build statically on Windows by default
 PKG_CONFIG ?= pkg-config --static
 else
@@ -86,47 +112,57 @@ endif
 # Set LINUX_OR_MACOS
 
 ifeq ($(LINUX),true)
-LINUX_OR_MACOS=true
+LINUX_OR_MACOS = true
 endif
 
 ifeq ($(MACOS),true)
-LINUX_OR_MACOS=true
+LINUX_OR_MACOS = true
 endif
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Set MACOS_OR_WINDOWS and HAIKU_OR_MACOS_OR_WINDOWS
+# Set MACOS_OR_WINDOWS, MACOS_OR_WASM_OR_WINDOWS, HAIKU_OR_MACOS_OR_WINDOWS and HAIKU_OR_MACOS_OR_WASM_OR_WINDOWS
 
 ifeq ($(HAIKU),true)
-HAIKU_OR_MACOS_OR_WINDOWS=true
+HAIKU_OR_MACOS_OR_WASM_OR_WINDOWS = true
+HAIKU_OR_MACOS_OR_WINDOWS = true
 endif
 
 ifeq ($(MACOS),true)
-MACOS_OR_WINDOWS=true
-HAIKU_OR_MACOS_OR_WINDOWS=true
+HAIKU_OR_MACOS_OR_WASM_OR_WINDOWS = true
+HAIKU_OR_MACOS_OR_WINDOWS = true
+MACOS_OR_WASM_OR_WINDOWS = true
+MACOS_OR_WINDOWS = true
+endif
+
+ifeq ($(WASM),true)
+HAIKU_OR_MACOS_OR_WASM_OR_WINDOWS = true
+MACOS_OR_WASM_OR_WINDOWS = true
 endif
 
 ifeq ($(WINDOWS),true)
-MACOS_OR_WINDOWS=true
-HAIKU_OR_MACOS_OR_WINDOWS=true
+HAIKU_OR_MACOS_OR_WASM_OR_WINDOWS = true
+HAIKU_OR_MACOS_OR_WINDOWS = true
+MACOS_OR_WASM_OR_WINDOWS = true
+MACOS_OR_WINDOWS = true
 endif
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Set UNIX
 
 ifeq ($(BSD),true)
-UNIX=true
+UNIX = true
 endif
 
 ifeq ($(HURD),true)
-UNIX=true
+UNIX = true
 endif
 
 ifeq ($(LINUX),true)
-UNIX=true
+UNIX = true
 endif
 
 ifeq ($(MACOS),true)
-UNIX=true
+UNIX = true
 endif
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -135,23 +171,39 @@ endif
 BASE_FLAGS = -Wall -Wextra -pipe -MD -MP
 BASE_OPTS  = -O3 -ffast-math -fdata-sections -ffunction-sections
 
-ifeq ($(CPU_I386_OR_X86_64),true)
+ifeq ($(WASM),true)
+BASE_OPTS += -msse -msse2 -msse3 -msimd128
+else ifeq ($(CPU_ARM32),true)
+BASE_OPTS += -mfpu=neon-vfpv4 -mfloat-abi=hard
+else ifeq ($(CPU_I386_OR_X86_64),true)
 BASE_OPTS += -mtune=generic -msse -msse2 -mfpmath=sse
 endif
 
-ifeq ($(CPU_ARM),true)
-ifneq ($(CPU_ARM64),true)
-BASE_OPTS += -mfpu=neon-vfpv4 -mfloat-abi=hard
-endif
+ifeq ($(WINDOWS),true)
+# Assume we want posix
+BASE_FLAGS += -posix -D__STDC_FORMAT_MACROS=1 -D__USE_MINGW_ANSI_STDIO=1
+# Needed for windows, see https://github.com/falkTX/Carla/issues/855
+BASE_FLAGS += -mstackrealign
+else
+# Not needed for Windows
+BASE_FLAGS += -fPIC -DPIC
 endif
 
 ifeq ($(MACOS),true)
-# MacOS linker flags
-LINK_OPTS  = -fdata-sections -ffunction-sections -Wl,-dead_strip -Wl,-dead_strip_dylibs
+LINK_OPTS += -Wl,-dead_strip,-dead_strip_dylibs
+else ifeq ($(WASM),true)
+LINK_OPTS += -O3
+LINK_OPTS += -Wl,--gc-sections
 else
-# Common linker flags
-LINK_OPTS  = -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed
+LINK_OPTS += -Wl,-O1,--as-needed,--gc-sections
+endif
+
 ifneq ($(SKIP_STRIPPING),true)
+ifeq ($(MACOS),true)
+LINK_OPTS += -Wl,-x
+else ifeq ($(WASM),true)
+LINK_OPTS += -sAGGRESSIVE_VARIABLE_ELIMINATION=1
+else
 LINK_OPTS += -Wl,--strip-all
 endif
 endif
@@ -161,32 +213,27 @@ ifeq ($(NOOPT),true)
 BASE_OPTS  = -O2 -ffast-math -fdata-sections -ffunction-sections
 endif
 
-ifeq ($(WINDOWS),true)
-# mingw has issues with this specific optimization
-# See https://github.com/falkTX/Carla/issues/696
-BASE_OPTS  += -fno-rerun-cse-after-loop
-# See https://github.com/falkTX/Carla/issues/855
-BASE_OPTS  += -mstackrealign
-else
-# Not needed for Windows
-BASE_FLAGS += -fPIC -DPIC
-endif
-
 ifeq ($(DEBUG),true)
 BASE_FLAGS += -DDEBUG -O0 -g
 LINK_OPTS   =
+ifeq ($(WASM),true)
+LINK_OPTS  += -sASSERTIONS=1
+endif
 else
 BASE_FLAGS += -DNDEBUG $(BASE_OPTS) -fvisibility=hidden
 CXXFLAGS   += -fvisibility-inlines-hidden
 endif
 
 BUILD_C_FLAGS   = $(BASE_FLAGS) -std=gnu99 $(CFLAGS)
-BUILD_CXX_FLAGS = $(BASE_FLAGS) -std=gnu++0x $(CXXFLAGS)
+BUILD_CXX_FLAGS = $(BASE_FLAGS) -std=gnu++11 $(CXXFLAGS)
 LINK_FLAGS      = $(LINK_OPTS) $(LDFLAGS)
 
-ifneq ($(MACOS),true)
+ifeq ($(WASM),true)
+# Special flag for emscripten
+LINK_FLAGS += -sENVIRONMENT=web -sLLD_REPORT_UNDEFINED
+else ifneq ($(MACOS),true)
 # Not available on MacOS
-LINK_FLAGS     += -Wl,--no-undefined
+LINK_FLAGS += -Wl,--no-undefined
 endif
 
 ifeq ($(MACOS_OLD),true)
@@ -195,7 +242,7 @@ endif
 
 ifeq ($(WINDOWS),true)
 # Always build statically on windows
-LINK_FLAGS     += -static
+LINK_FLAGS     += -static -static-libgcc -static-libstdc++
 endif
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -222,106 +269,16 @@ CXXFLAGS   += -Weffc++ -Wnon-virtual-dtor -Woverloaded-virtual
 endif
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Check for required libraries
-
-HAVE_CAIRO  = $(shell $(PKG_CONFIG) --exists cairo && echo true)
-
-ifeq ($(HAIKU_OR_MACOS_OR_WINDOWS),true)
-HAVE_OPENGL = true
-else
-HAVE_OPENGL = $(shell $(PKG_CONFIG) --exists gl && echo true)
-HAVE_X11    = $(shell $(PKG_CONFIG) --exists x11 && echo true)
-endif
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Check for optional libraries
-
-HAVE_JACK  = $(shell $(PKG_CONFIG) --exists jack && echo true)
-HAVE_LIBLO = $(shell $(PKG_CONFIG) --exists liblo && echo true)
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Set Generic DGL stuff
-
-ifeq ($(HAIKU),true)
-DGL_SYSTEM_LIBS += -lbe
-endif
-
-ifeq ($(MACOS),true)
-DGL_SYSTEM_LIBS += -framework Cocoa
-endif
-
-ifeq ($(WINDOWS),true)
-DGL_SYSTEM_LIBS += -lgdi32 -lcomdlg32
-endif
-
-ifneq ($(HAIKU_OR_MACOS_OR_WINDOWS),true)
-ifeq ($(HAVE_X11),true)
-DGL_FLAGS       += $(shell $(PKG_CONFIG) --cflags x11)
-DGL_SYSTEM_LIBS += $(shell $(PKG_CONFIG) --libs x11)
-endif
-endif
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Set Cairo specific stuff
-
-ifeq ($(HAVE_CAIRO),true)
-
-DGL_FLAGS   += -DHAVE_CAIRO
-
-CAIRO_FLAGS  = $(shell $(PKG_CONFIG) --cflags cairo)
-CAIRO_LIBS   = $(shell $(PKG_CONFIG) --libs cairo)
-
-HAVE_CAIRO_OR_OPENGL = true
-
-endif
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Set OpenGL specific stuff
-
-ifeq ($(HAVE_OPENGL),true)
-
-DGL_FLAGS   += -DHAVE_OPENGL
-
-ifeq ($(HAIKU),true)
-OPENGL_FLAGS = $(shell $(PKG_CONFIG) --cflags gl)
-OPENGL_LIBS  = $(shell $(PKG_CONFIG) --libs gl)
-endif
-
-ifeq ($(MACOS),true)
-OPENGL_LIBS  = -framework OpenGL
-endif
-
-ifeq ($(WINDOWS),true)
-OPENGL_LIBS  = -lopengl32
-endif
-
-ifneq ($(HAIKU_OR_MACOS_OR_WINDOWS),true)
-OPENGL_FLAGS = $(shell $(PKG_CONFIG) --cflags gl x11)
-OPENGL_LIBS  = $(shell $(PKG_CONFIG) --libs gl x11)
-endif
-
-HAVE_CAIRO_OR_OPENGL = true
-
-endif
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Set app extension
-
-ifeq ($(WINDOWS),true)
-APP_EXT = .exe
-endif
-
-# ---------------------------------------------------------------------------------------------------------------------
 # Set shared lib extension
-
-LIB_EXT = .so
 
 ifeq ($(MACOS),true)
 LIB_EXT = .dylib
-endif
-
-ifeq ($(WINDOWS),true)
+else ifeq ($(WASM),true)
+LIB_EXT = .wasm
+else ifeq ($(WINDOWS),true)
 LIB_EXT = .dll
+else
+LIB_EXT = .so
 endif
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -329,6 +286,8 @@ endif
 
 ifeq ($(MACOS),true)
 SHARED = -dynamiclib
+else ifeq ($(WASM),true)
+SHARED = -sSIDE_MODULE=2
 else
 SHARED = -shared
 endif
@@ -336,10 +295,19 @@ endif
 # ---------------------------------------------------------------------------------------------------------------------
 # Handle the verbosity switch
 
-ifeq ($(VERBOSE),true)
 SILENT =
+
+ifeq ($(VERBOSE),1)
+else ifeq ($(VERBOSE),y)
+else ifeq ($(VERBOSE),yes)
+else ifeq ($(VERBOSE),true)
 else
 SILENT = @
 endif
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Protect against multiple inclusion
+
+endif # DIE_PLUGINS_MAKEFILE_BASE_INCLUDED
 
 # ---------------------------------------------------------------------------------------------------------------------
