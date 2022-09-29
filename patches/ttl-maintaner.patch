@@ -1,0 +1,134 @@
+diff --git a/plugins/a-comp.lv2/a-comp#stereo.ttl.in b/plugins/a-comp.lv2/a-comp#stereo.ttl.in
+index dd84c75..dc7f2d3 100644
+--- a/plugins/a-comp.lv2/a-comp#stereo.ttl.in
++++ b/plugins/a-comp.lv2/a-comp#stereo.ttl.in
+@@ -185,5 +185,10 @@ A powerful stereo compressor.
+     doap:license "GPL v2+" ;
+     doap:developer <http://ardour.org/credits.html> ;
+ 
++    doap:maintainer [
++        foaf:name "DISTRHO" ;
++        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++    ] ;
++
+     lv2:microVersion 2 ;
+     lv2:minorVersion 2 .
+diff --git a/plugins/a-comp.lv2/a-comp.ttl.in b/plugins/a-comp.lv2/a-comp.ttl.in
+index 23adaa6..a76910c 100644
+--- a/plugins/a-comp.lv2/a-comp.ttl.in
++++ b/plugins/a-comp.lv2/a-comp.ttl.in
+@@ -169,8 +169,13 @@ A powerful mono compressor.
+ """ ;
+ 
+     doap:name "DIE Compressor" ;
+-		doap:license <http://usefulinc.com/doap/licenses/gpl> ;
++    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+     doap:developer <http://ardour.org/credits.html> ;
+ 
++    doap:maintainer [
++        foaf:name "DISTRHO" ;
++        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++    ] ;
++
+     lv2:microVersion 2 ;
+     lv2:minorVersion 2 .
+diff --git a/plugins/a-delay.lv2/a-delay.ttl.in b/plugins/a-delay.lv2/a-delay.ttl.in
+index c5c4ccd..2681da5 100644
+--- a/plugins/a-delay.lv2/a-delay.ttl.in
++++ b/plugins/a-delay.lv2/a-delay.ttl.in
+@@ -183,5 +183,10 @@ A simple delay plugin
+     doap:license "GPL v2+" ;
+     doap:developer <http://ardour.org/credits.html> ;
+ 
++    doap:maintainer [
++        foaf:name "DISTRHO" ;
++        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++    ] ;
++
+     lv2:microVersion 2 ;
+     lv2:minorVersion 4 .
+diff --git a/plugins/a-eq.lv2/a-eq.ttl.in b/plugins/a-eq.lv2/a-eq.ttl.in
+index 44efb56..118d9fc 100644
+--- a/plugins/a-eq.lv2/a-eq.ttl.in
++++ b/plugins/a-eq.lv2/a-eq.ttl.in
+@@ -311,5 +311,10 @@ A basic 4 band EQ.
+     doap:license "GPL v2+" ;
+     doap:developer <http://ardour.org/credits.html> ;
+ 
++    doap:maintainer [
++        foaf:name "DISTRHO" ;
++        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++    ] ;
++
+     lv2:microVersion 2 ;
+     lv2:minorVersion 2 .
+diff --git a/plugins/a-exp.lv2/a-exp#stereo.ttl.in b/plugins/a-exp.lv2/a-exp#stereo.ttl.in
+index 72bce7f..120689e 100644
+--- a/plugins/a-exp.lv2/a-exp#stereo.ttl.in
++++ b/plugins/a-exp.lv2/a-exp#stereo.ttl.in
+@@ -175,8 +175,13 @@ A powerful stereo expander
+ """ ;
+ 
+     doap:name "DIE Expander (stereo)" ;
+-		doap:license <http://usefulinc.com/doap/licenses/gpl> ;
++    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+     doap:developer <http://ardour.org/credits.html> ;
+ 
++    doap:maintainer [
++        foaf:name "DISTRHO" ;
++        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++    ] ;
++
+     lv2:microVersion 2 ;
+     lv2:minorVersion 2 .
+diff --git a/plugins/a-exp.lv2/a-exp.ttl.in b/plugins/a-exp.lv2/a-exp.ttl.in
+index b98c5fb..38b3237 100644
+--- a/plugins/a-exp.lv2/a-exp.ttl.in
++++ b/plugins/a-exp.lv2/a-exp.ttl.in
+@@ -170,8 +170,13 @@ A powerful mono expander
+ """ ;
+ 
+     doap:name "DIE Expander" ;
+-		doap:license <http://usefulinc.com/doap/licenses/gpl> ;
++    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+     doap:developer <http://ardour.org/credits.html> ;
+ 
++    doap:maintainer [
++        foaf:name "DISTRHO" ;
++        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++    ] ;
++
+     lv2:microVersion 2 ;
+     lv2:minorVersion 2 .
+diff --git a/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in b/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in
+index b96e947..fd8cb18 100644
+--- a/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in
++++ b/plugins/a-fluidsynth.lv2/a-fluidsynth.ttl.in
+@@ -33,6 +33,11 @@
+   doap:developer <http://ardour.org/credits.html> ;
+   doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+ 
++  doap:maintainer [
++   foaf:name "DISTRHO" ;
++   foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++  ] ;
++
+   lv2:microVersion 2 ;
+   lv2:minorVersion 2 ;
+ 
+diff --git a/plugins/a-reverb.lv2/a-reverb.ttl.in b/plugins/a-reverb.lv2/a-reverb.ttl.in
+index 66e1a91..29e3125 100644
+--- a/plugins/a-reverb.lv2/a-reverb.ttl.in
++++ b/plugins/a-reverb.lv2/a-reverb.ttl.in
+@@ -20,6 +20,11 @@
+ 	doap:developer <http://ardour.org/credits.html> ;
+ 	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+ 
++	doap:maintainer [
++		foaf:name "DISTRHO" ;
++		foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
++	] ;
++
+ 	lv2:microVersion 4 ;
+ 	lv2:minorVersion 2 ;
+ 	lv2:optionalFeature lv2:hardRTCapable ;
