@@ -33,6 +33,8 @@
   doap:developer <http://ardour.org/credits.html> ;
   doap:license <http://usefulinc.com/doap/licenses/gpl> ;
 
+  mod:brand "DISTRHO" ;
+
   doap:maintainer [
    foaf:name "DISTRHO" ;
    foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
