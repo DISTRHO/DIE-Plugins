@@ -2,6 +2,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix idpy: <http://harrisonconsoles.com/lv2/inlinedisplay#> .
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix mod:  <http://moddevices.com/ns/mod#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rsz:  <http://lv2plug.in/ns/ext/resize-port#> .
 @prefix unit: <http://lv2plug.in/ns/extensions/units#> .
@@ -169,8 +170,15 @@ A powerful mono compressor.
 """ ;
 
     doap:name "DIE Compressor" ;
-		doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
     doap:developer <http://ardour.org/credits.html> ;
+
+    mod:brand "DISTRHO" ;
+
+    doap:maintainer [
+        foaf:name "DISTRHO" ;
+        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
+    ] ;
 
     lv2:microVersion 2 ;
     lv2:minorVersion 2 .
