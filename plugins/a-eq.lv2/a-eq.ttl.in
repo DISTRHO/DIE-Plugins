@@ -311,5 +311,10 @@ A basic 4 band EQ.
     doap:license "GPL v2+" ;
     doap:developer <http://ardour.org/credits.html> ;
 
+    doap:maintainer [
+        foaf:name "DISTRHO" ;
+        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
+    ] ;
+
     lv2:microVersion 2 ;
     lv2:minorVersion 2 .

@@ -175,8 +175,13 @@ A powerful stereo expander
 """ ;
 
     doap:name "DIE Expander (stereo)" ;
-		doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
     doap:developer <http://ardour.org/credits.html> ;
+
+    doap:maintainer [
+        foaf:name "DISTRHO" ;
+        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
+    ] ;
 
     lv2:microVersion 2 ;
     lv2:minorVersion 2 .

@@ -170,8 +170,13 @@ A powerful mono expander
 """ ;
 
     doap:name "DIE Expander" ;
-		doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+    doap:license <http://usefulinc.com/doap/licenses/gpl> ;
     doap:developer <http://ardour.org/credits.html> ;
+
+    doap:maintainer [
+        foaf:name "DISTRHO" ;
+        foaf:homepage <https://github.com/DISTRHO/DIE-Plugins> ;
+    ] ;
 
     lv2:microVersion 2 ;
     lv2:minorVersion 2 .
